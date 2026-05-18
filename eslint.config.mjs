@@ -151,6 +151,10 @@ export default [
 			'bundled-modules/**/*',
 			'tools/**/*',
 			'module-local-dev/**/*',
+			// Buddy fork: the new wall-panels Vite app has its own tsconfig and import-resolution.
+			// Linting it under the root config produces hundreds of false-positive n/no-missing-import
+			// and explicit-return-type errors. Skip wholesale until per-workspace lint is wired up.
+			'webui-panels/**/*',
 			'launcher/dev.cjs',
 			'webui/public/_deps/**/*',
 			'webui/post-install.ts',

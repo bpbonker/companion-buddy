@@ -105,3 +105,13 @@ typings/
 
 #ignore copilot files
 .github/copilot-instructions.md
+
+# Playwright artifacts (regenerated per run)
+test-results/
+playwright-report/
+
+# Local development notes / screenshots used by the operator (not for the public repo)
+Resources/
+
+# Dev-server stdout captured by some tasks
+dev-output.log

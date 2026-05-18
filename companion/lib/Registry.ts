@@ -21,6 +21,7 @@ import { InternalController } from './Internal/Controller.js'
 import LogController, { type Logger } from './Log/Controller.js'
 import { PageController } from './Page/Controller.js'
 import { PageStore } from './Page/Store.js'
+import { PanelsController } from './Panels/Controller.js'
 import { PreviewController } from './Preview/Controller.js'
 import { ActiveLearningStore } from './Resources/ActiveLearningStore.js'
 import { isPackaged, sendOverIpc, showErrorMessage } from './Resources/Util.js'
@@ -152,6 +153,11 @@ export class Registry {
 	readonly #internalApiRouter = express.Router()
 
 	readonly variables: VariablesController
+
+	/**
+	 * Buddy wall-panel subsystem
+	 */
+	readonly panels: PanelsController
 
 	readonly #appInfo: AppInfo
 
@@ -308,6 +314,10 @@ export class Registry {
 			this.ui.express
 		)
 		this.cloud = new CloudController(this.#appInfo, this.db, this.#data.cache, controlStore, this.graphics, pageStore)
+		this.panels = new PanelsController(this.db, this.variables)
+		this.ui.server.on('upgrade', (req, sock, head) => {
+			void this.panels.handleUpgrade(req, sock, head)
+		})
 		this.usageStatistics = new DataUsageStatistics(
 			this.#appInfo,
 			this.surfaces,

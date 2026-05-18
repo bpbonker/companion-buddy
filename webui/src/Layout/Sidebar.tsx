@@ -20,6 +20,7 @@ import {
 	faImages,
 	faInfo,
 	faNetworkWired,
+	faObjectGroup,
 	faPeopleArrows,
 	faPlug,
 	faPuzzlePiece,
@@ -184,20 +185,36 @@ function SidebarMenuItem(item: SidebarMenuItemProps) {
 		e.preventDefault()
 		item.onClick()
 	}
+	// Paths that aren't tanstack-router routes (other apps mounted on the same backend, like /panels-ui/*
+	// or /user-guide/) must be plain <a href> — Link would try to match them against the SPA route tree.
+	const isExternalAppPath = !!item.path && /^\/(panels-ui|user-guide|emulator|tablet)(\/|$)/.test(item.path)
+	const isAbsoluteUrl = !!item.path && /^https?:\/\//.test(item.path)
+	const useAnchor = isExternalAppPath || isAbsoluteUrl
 	// note: NarrowModePopover must wrap CNavLink directly to get a ref-forwarding component. It didn't work with CNavItem
 	return (
 		<CNavItem idx={item.path ?? item.name} className={item.subheading ? 'nav-two-line' : undefined}>
 			<NarrowModePopover title={item.title || item.name}>
 				{item.path ? (
-					<CNavLink
-						to={item.path}
-						target={item.target}
-						as={Link}
-						onClick={onClick2}
-						title={isNarrow ? undefined : item.title /* In narrow mode we put the title in the popover */}
-					>
-						<SidebarMenuItemLabel {...item} />
-					</CNavLink>
+					useAnchor ? (
+						<CNavLink
+							href={makeAbsolutePath(item.path)}
+							target={item.target}
+							onClick={onClick2}
+							title={isNarrow ? undefined : item.title}
+						>
+							<SidebarMenuItemLabel {...item} />
+						</CNavLink>
+					) : (
+						<CNavLink
+							to={item.path}
+							target={item.target}
+							as={Link}
+							onClick={onClick2}
+							title={isNarrow ? undefined : item.title /* In narrow mode we put the title in the popover */}
+						>
+							<SidebarMenuItemLabel {...item} />
+						</CNavLink>
+					)
 				) : (
 					<CNavLink onClick={onClick2} style={{ cursor: 'pointer' }} title={isNarrow ? undefined : item.title}>
 						<SidebarMenuItemLabel {...item} />
@@ -400,6 +417,14 @@ export const MySidebar = memo(function MySidebar() {
 						path="/connections"
 					/>
 					<SidebarMenuItem name="Buttons" icon={faTableCells} path="/buttons" />
+					<SidebarMenuItem
+						name="Wall Panels"
+						subheading="for tablets"
+						icon={faObjectGroup}
+						path="/panels-ui/editor"
+						target="_blank"
+						title="Open the Buddy Panels editor — design touch-friendly wall-panel layouts for tablets in kiosk mode."
+					/>
 					<SidebarMenuItem name="Image Library" icon={faImages} path="/image-library" />
 					<SidebarMenuItemGroup
 						name="Surfaces"

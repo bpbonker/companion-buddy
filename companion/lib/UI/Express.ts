@@ -111,11 +111,54 @@ export class UIExpress {
 		/**
 		 * We don't want to ship hundreds of loose files, so instead we can serve the webui files from a zip file
 		 */
-		const webuiServer = createServeStatic(getResourcePath('webui.zip'), [
-			getResourcePath('static'),
-			getResourcePath('webui/build'),
-		])
-		const docsServer = createServeStatic(getResourcePath('docs.zip'), [getResourcePath('docs/placeholder')], true)
+		let webuiServer: Express.RequestHandler
+		try {
+			webuiServer = createServeStatic(getResourcePath('webui.zip'), [
+				getResourcePath('static'),
+				getResourcePath('webui/build'),
+			])
+		} catch {
+			// webui build not present (e.g. fork running without the legacy admin UI built); serve a tiny placeholder.
+			webuiServer = (_req, res, _next) => {
+				res
+					.status(503)
+					.send(
+						'<html><body><h1>Companion webui not built</h1><p>This fork mounts the new Panels UI at <a href="/panels-ui/">/panels-ui/</a>.</p></body></html>'
+					)
+			}
+		}
+		let docsServer: Express.RequestHandler
+		try {
+			docsServer = createServeStatic(getResourcePath('docs.zip'), [getResourcePath('docs/placeholder')], true)
+		} catch {
+			docsServer = (_req, res, _next) => {
+				res.status(404).send('docs not built')
+			}
+		}
+
+		// Buddy wall-panel UI (separate Vite build served under /panels-ui).
+		// Try at request time so a build that lands after startup is picked up without a restart.
+		let panelsUiServer: Express.RequestHandler | undefined
+		const tryMakePanelsServer = () => {
+			try {
+				return createServeStatic(getResourcePath('webui-panels.zip'), [getResourcePath('webui-panels/build')])
+			} catch {
+				return undefined
+			}
+		}
+		panelsUiServer = tryMakePanelsServer()
+		const panelsUiLazy: Express.RequestHandler = (req, res, next) => {
+			if (!panelsUiServer) panelsUiServer = tryMakePanelsServer()
+			if (panelsUiServer) {
+				panelsUiServer(req, res, next)
+				return
+			}
+			res
+				.status(503)
+				.send(
+					'<html><body><h1>Panels UI not built</h1><p>Run <code>yarn build:panels</code> to produce <code>webui-panels/build/</code>, or use the dev server at <a href="http://localhost:5174/editor">localhost:5174</a>.</p></body></html>'
+				)
+		}
 
 		// Create rewrite middleware to replace ROOT_URL_HERE in HTML/CSS/JS files
 		const rewriteMiddleware = createRewriteMiddleware()
@@ -125,6 +168,15 @@ export class UIExpress {
 		this.app.get('/user-guide', (req, res) => {
 			// Redirect to add trailing slash
 			res.redirect(301, path.join(getCustomPrefixHeader(req), '/user-guide/'))
+		})
+
+		// Serve the buddy panels UI under /panels-ui. The lazy wrapper picks up the build
+		// directory even if it appears AFTER the backend started.
+		this.app.use('/panels-ui', compression(), panelsUiLazy)
+		// SPA fallback inside /panels-ui — all unknown paths under /panels-ui serve index.html
+		this.app.get('/panels-ui/*all', compression(), async (req, res, next) => {
+			req.url = '/index.html'
+			return panelsUiLazy(req, res, next)
 		})
 
 		// Serve the webui directory

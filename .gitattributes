@@ -2,3 +2,24 @@
 /.yarn/releases/*    binary
 /.yarn/plugins/**/*  binary
 /.pnp.*              binary linguist-generated
+
+# Force LF line endings repo-wide (matches prettier's endOfLine: lf and avoids
+# CRLF churn on Windows where core.autocrlf defaults to true).
+* text=auto eol=lf
+
+# Binary files — never normalize as text
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.icns   binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.zip    binary
+*.tar    binary
+*.tgz    binary
+*.gz     binary
+*.lock   binary

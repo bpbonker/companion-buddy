@@ -111,6 +111,8 @@ export function createTrpcRouter(registry: Registry) {
 
 		preview: registry.preview.createTrpcRouter(),
 		imageLibrary: registry.graphics.imageLibrary.createTrpcRouter(),
+
+		panels: registry.panels.createTrpcRouter(),
 	})
 }
 

@@ -6,6 +6,7 @@
     "companion",
     "shared-lib",
     "webui",
+    "webui-panels",
     "launcher",
     "launcher-ui",
     "docs"
@@ -17,6 +18,8 @@
     "dev:inner": "yarn workspace companion dev:inner",
     "dev:debug": "yarn workspace companion dev:debug",
     "dev:webui": "yarn workspace @companion-app/webui dev",
+    "dev:panels": "yarn workspace @companion-app/webui-panels dev",
+    "build:panels": "yarn workspace @companion-app/webui-panels build",
     "dev:webui:docs": "tsx ./tools/webui-dev-docs.mts",
     "dev:docs": "yarn workspace @companion-app/docs start",
     "dev:storybook": "yarn workspace @companion-app/webui storybook",
@@ -54,6 +57,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@playwright/test": "^1.49.0",
     "@tanstack/eslint-plugin-query": "^5.100.9",
     "@types/express-serve-static-core": "^5.1.1",
     "@types/node": "^22.19.17",

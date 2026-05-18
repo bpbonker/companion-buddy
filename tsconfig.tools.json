@@ -1,6 +1,6 @@
 {
 	"exclude": ["node_modules/**", "webui/**", "module-local-dev/**"],
-	"include": ["tools/**/*.mts", "tools/**/*.ts", "tools/**/*.cts"],
+	"include": ["tools/**/*.mts", "tools/**/*.ts", "tools/**/*.cts", "playwright.config.ts"],
 	"compilerOptions": {
 		"composite": true,
 		"paths": {},

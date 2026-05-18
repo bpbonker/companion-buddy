@@ -1,0 +1,723 @@
+/* ==========================================================================
+   Buddy Panels — global styles
+   Editor chrome: matches Companion's webui design language (Roboto, #333/#111, red)
+   Kiosk canvas: premium per-panel theme (Inter, glass, depth) — see themes/themes.ts
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+	/* Companion design language — match webui/src/scss/_variables.scss exactly */
+	--cmp-red: #d50215;
+	--cmp-red-hover: #b80112;
+	--cmp-red-dark: #a30110;
+	--cmp-body-bg: #333;
+	--cmp-sidebar-bg: #111;
+	--cmp-sidebar-fg: #e9e9e9;
+	--cmp-card-bg: #f7f7f7;
+	--cmp-card-fg: #212529;
+	--cmp-card-muted: #6c757d;
+	--cmp-border-light: #d8d8d8;
+	--cmp-input-bg: #fff;
+
+	/* Companion uses Roboto for chrome */
+	--font-chrome: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	/* Inter is reserved for the kiosk view — gives wall-mounted tablets that premium look */
+	--font-kiosk: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+	--cui-border-radius: 0.375rem;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: var(--cmp-body-bg);
+	color: #e9e9e9;
+	font-family: var(--font-chrome);
+	font-size: 14px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	background: var(--cmp-body-bg);
+}
+
+a {
+	color: #ea818a;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+/* ----- Buttons (editor chrome — matches CoreUI/Companion) ----- */
+button {
+	font-family: inherit;
+	font-size: 0.9rem;
+	font-weight: 400;
+	background: #6c757d;
+	color: #fff;
+	border: 1px solid #6c757d;
+	border-radius: var(--cui-border-radius);
+	padding: 0.375rem 0.75rem;
+	cursor: pointer;
+	transition:
+		color 0.15s,
+		background-color 0.15s,
+		border-color 0.15s,
+		box-shadow 0.15s;
+	line-height: 1.5;
+}
+
+button:hover {
+	background: #5c6469;
+	border-color: #565d63;
+}
+button:active {
+	background: #565d63;
+}
+button:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+button:focus-visible {
+	outline: 0;
+	box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5);
+}
+
+button.primary {
+	background: var(--cmp-red);
+	border-color: var(--cmp-red);
+}
+button.primary:hover {
+	background: var(--cmp-red-hover);
+	border-color: var(--cmp-red-dark);
+}
+button.primary:disabled {
+	background: var(--cmp-red);
+	border-color: var(--cmp-red);
+}
+button.primary:focus-visible {
+	box-shadow: 0 0 0 0.25rem rgba(213, 2, 21, 0.5);
+}
+
+button.danger {
+	background: #c92020;
+	border-color: #c92020;
+}
+button.danger:hover {
+	background: #aa1b1b;
+	border-color: #951818;
+}
+
+button.ghost {
+	background: transparent;
+	border-color: rgba(255, 255, 255, 0.18);
+}
+button.ghost:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+/* ----- Form inputs (match Companion) ----- */
+input,
+select,
+textarea {
+	font-family: inherit;
+	font-size: 0.9rem;
+	background: var(--cmp-input-bg);
+	color: var(--cmp-card-fg);
+	border: 1px solid var(--cmp-border-light);
+	border-radius: var(--cui-border-radius);
+	padding: 0.375rem 0.75rem;
+	line-height: 1.5;
+	transition:
+		border-color 0.15s,
+		box-shadow 0.15s;
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: var(--cmp-card-muted);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 0;
+	border-color: #ea818a;
+	box-shadow: 0 0 0 0.25rem rgba(213, 2, 21, 0.25);
+}
+
+input[type='color'] {
+	padding: 2px;
+	height: 34px;
+	width: 100%;
+	cursor: pointer;
+	background: var(--cmp-input-bg);
+}
+
+/* ==========================================================================
+   App shell
+   ========================================================================== */
+
+.app-shell {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 1rem;
+	height: 56px;
+	background: var(--cmp-red);
+	color: #fff;
+	flex-shrink: 0;
+}
+
+.toolbar .brand {
+	font-weight: 400;
+	font-size: 1.25em;
+	color: #fff;
+	padding: 0 0.75rem;
+	letter-spacing: 0;
+}
+
+.toolbar .brand .accent {
+	color: #fff;
+	font-weight: 700;
+}
+
+.toolbar .title {
+	font-weight: 400;
+	font-size: 15px;
+	flex: 1;
+	color: rgba(255, 255, 255, 0.95);
+	padding: 0 0.5rem;
+}
+
+.toolbar .title .dirty {
+	color: #ffd166;
+	margin-left: 6px;
+	font-weight: 700;
+}
+
+.toolbar button {
+	background: rgba(255, 255, 255, 0.14);
+	border-color: rgba(255, 255, 255, 0.2);
+	color: #fff;
+}
+.toolbar button:hover {
+	background: rgba(255, 255, 255, 0.22);
+	border-color: rgba(255, 255, 255, 0.32);
+}
+.toolbar button.primary {
+	background: rgba(255, 255, 255, 0.22);
+	border-color: rgba(255, 255, 255, 0.4);
+}
+.toolbar button.primary:hover {
+	background: rgba(255, 255, 255, 0.32);
+	border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   Editor layout
+   ========================================================================== */
+
+.editor-layout {
+	display: grid;
+	grid-template-columns: 224px minmax(0, 1fr) 308px;
+	flex: 1;
+	width: 100%;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.palette,
+.inspector {
+	background: var(--cmp-sidebar-bg);
+	color: var(--cmp-sidebar-fg);
+	padding: 16px 14px;
+	overflow-y: auto;
+}
+
+.inspector {
+	background: var(--cmp-card-bg);
+	color: var(--cmp-card-fg);
+}
+
+.inspector input,
+.inspector select,
+.inspector textarea {
+	background: var(--cmp-input-bg);
+	color: var(--cmp-card-fg);
+	border: 1px solid var(--cmp-border-light);
+}
+
+.palette h3,
+.inspector h3 {
+	margin: 0 0 12px;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-weight: 500;
+	color: rgba(233, 233, 233, 0.65);
+}
+
+.inspector h3 {
+	color: var(--cmp-card-muted);
+}
+
+.palette-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	margin-bottom: 4px;
+	padding: 8px 11px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: var(--cmp-sidebar-fg);
+	cursor: grab;
+	text-align: left;
+	font-size: 0.9rem;
+	font-weight: 400;
+	transition:
+		background 0.12s,
+		border-color 0.12s;
+}
+.palette-item:hover {
+	background: rgba(255, 255, 255, 0.06);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+.palette-item:active {
+	cursor: grabbing;
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.palette-item .icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	background: rgba(213, 2, 21, 0.16);
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #f1aab0;
+	border: 1px solid rgba(213, 2, 21, 0.25);
+}
+
+/* ----- Canvas host + canvas ----- */
+
+.canvas-host {
+	overflow: auto;
+	background: var(--cmp-body-bg);
+	padding: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 0;
+}
+
+.canvas-scale-wrap {
+	flex-shrink: 0;
+	position: relative;
+}
+
+/* Zoom control in the toolbar */
+.zoom-control {
+	display: flex;
+	align-items: stretch;
+	gap: 0;
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: var(--cui-border-radius);
+	overflow: hidden;
+}
+.zoom-control > * {
+	border-radius: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	height: 32px;
+	padding: 0 10px;
+	color: #fff;
+}
+.zoom-control button {
+	font-size: 16px;
+	line-height: 1;
+	min-width: 30px;
+}
+.zoom-control select {
+	background: transparent !important;
+	color: #fff;
+	min-width: 110px;
+	border-left: 1px solid rgba(255, 255, 255, 0.18) !important;
+	border-right: 1px solid rgba(255, 255, 255, 0.18) !important;
+	cursor: pointer;
+}
+.zoom-control select option {
+	background: #222;
+	color: #fff;
+}
+.zoom-control button:hover {
+	background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.canvas {
+	position: relative;
+	background: var(--bp-canvas-bg, #0b1220);
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	background-image: radial-gradient(var(--bp-canvas-grid, rgba(255, 255, 255, 0.06)) 1px, transparent 1px);
+	background-size: var(--cell, 24px) var(--cell, 24px);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+	font-family: var(--font-kiosk);
+}
+
+.canvas.framed {
+	border-radius: 22px;
+	box-shadow:
+		0 30px 80px rgba(0, 0, 0, 0.6),
+		0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+		0 1px 0 rgba(255, 255, 255, 0.18) inset,
+		0 0 0 6px #0a0a0a,
+		0 0 0 7px #303030;
+}
+
+.canvas .item {
+	position: absolute;
+	border: 1px solid transparent;
+	user-select: none;
+}
+.canvas .item.selected {
+	outline: 2px solid var(--cmp-red);
+	outline-offset: 1px;
+}
+
+.canvas .item .resize-handle {
+	position: absolute;
+	right: -5px;
+	bottom: -5px;
+	width: 12px;
+	height: 12px;
+	background: var(--cmp-red);
+	border: 2px solid #fff;
+	border-radius: 3px;
+	cursor: nwse-resize;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   Inspector fields
+   ========================================================================== */
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	margin-bottom: 14px;
+}
+
+.field label {
+	font-size: 11px;
+	color: var(--cmp-card-fg);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	font-weight: 500;
+	opacity: 0.7;
+}
+
+.field .row {
+	display: flex;
+	gap: 6px;
+}
+
+.field .row > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.inspector-section {
+	border-top: 1px solid var(--cmp-border-light);
+	margin: 16px -14px 0;
+	padding: 16px 14px 0;
+}
+
+.empty-state {
+	color: var(--cmp-card-muted);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* Reset/clear-color button for color fields */
+.color-with-clear {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+}
+.color-with-clear input[type='color'] {
+	flex: 1;
+}
+.color-with-clear button.clear {
+	background: var(--cmp-input-bg);
+	color: var(--cmp-card-muted);
+	border: 1px solid var(--cmp-border-light);
+	padding: 4px 8px;
+	font-size: 11px;
+}
+.color-with-clear button.clear:hover {
+	background: #efefef;
+	color: var(--cmp-card-fg);
+}
+
+/* ==========================================================================
+   Panel list
+   ========================================================================== */
+
+.panel-list {
+	padding: 32px 24px;
+	max-width: 920px;
+	margin: 0 auto;
+}
+.panel-list h2 {
+	margin: 0 0 18px;
+	font-weight: 400;
+	font-size: 22px;
+}
+.panel-list ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.panel-list li {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 13px 16px;
+	background: #2c2c2c;
+	border: 1px solid #1f1f1f;
+	border-radius: 6px;
+	margin-bottom: 6px;
+	transition:
+		background 0.12s,
+		border-color 0.12s;
+}
+.panel-list li:hover {
+	background: #353535;
+	border-color: #2a2a2a;
+}
+.panel-list li .name {
+	flex: 1;
+	font-weight: 500;
+	font-size: 14.5px;
+}
+.panel-list li .slug {
+	color: #a0a0a0;
+	font-size: 12px;
+	font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Modal
+   ========================================================================== */
+
+.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+}
+.modal {
+	background: var(--cmp-card-bg);
+	color: var(--cmp-card-fg);
+	border-radius: 8px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+	padding: 24px;
+	min-width: 420px;
+	max-width: 92vw;
+	max-height: 92vh;
+	overflow-y: auto;
+}
+.modal h2 {
+	margin: 0 0 14px;
+	font-weight: 400;
+	font-size: 1.5rem;
+}
+.modal h3 {
+	color: var(--cmp-card-fg);
+	margin: 16px 0 8px;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	opacity: 0.7;
+}
+.modal .field label {
+	color: var(--cmp-card-fg);
+}
+.modal .actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	margin-top: 18px;
+	padding-top: 14px;
+	border-top: 1px solid var(--cmp-border-light);
+}
+.modal button:not(.primary):not(.danger) {
+	background: var(--cmp-input-bg);
+	border-color: var(--cmp-border-light);
+	color: var(--cmp-card-fg);
+}
+.modal button:not(.primary):not(.danger):hover {
+	background: #efefef;
+}
+
+/* ==========================================================================
+   Devices / tokens
+   ========================================================================== */
+
+.token-row {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 8px;
+	padding: 10px 12px;
+	background: var(--cmp-input-bg);
+	border: 1px solid var(--cmp-border-light);
+	border-radius: 5px;
+}
+.token-row > div:first-child {
+	flex: 1;
+	min-width: 0;
+}
+.token-row code {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	background: #f1f1f1;
+	padding: 5px 7px;
+	border-radius: 4px;
+	font-family: var(--font-mono);
+	font-size: 11px;
+	color: #444;
+}
+
+.qr-card {
+	background: var(--cmp-input-bg);
+	border: 1px solid var(--cmp-border-light);
+	padding: 14px;
+	border-radius: 6px;
+	margin-top: 12px;
+}
+
+/* ==========================================================================
+   Kiosk — premium, Inter, deep shadows, glass
+   ========================================================================== */
+
+.kiosk {
+	/* Pin directly to the visible viewport — `position: fixed; inset: 0` is the only thing
+	   that reliably covers iOS PWA safe areas (home-indicator gesture bar on iPad). Inheriting
+	   sizing via flex/100% leaves a strip of #root's grey body-bg visible at the bottom in
+	   standalone mode. */
+	position: fixed;
+	inset: 0;
+	background: var(--bp-canvas-bg, #0b1220);
+	overflow: hidden;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: manipulation;
+	font-family: var(--font-kiosk);
+	font-feature-settings: 'cv11', 'ss01', 'tnum';
+	letter-spacing: -0.005em;
+}
+
+.kiosk-stage {
+	position: absolute;
+	background: var(--bp-canvas-bg);
+	transform-origin: top left;
+}
+
+.kiosk-stage.framed {
+	border-radius: 22px;
+	overflow: hidden;
+	box-shadow:
+		0 40px 100px rgba(0, 0, 0, 0.7),
+		0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+		0 1px 0 rgba(255, 255, 255, 0.18) inset,
+		0 0 0 6px #0a0a0a,
+		0 0 0 7px #303030,
+		0 0 0 9px rgba(0, 0, 0, 0.4);
+}
+
+.kiosk .kiosk-status {
+	position: fixed;
+	top: 8px;
+	right: 12px;
+	font-size: 11px;
+	font-family: var(--font-mono);
+	color: var(--bp-muted-fg, #94a3b8);
+	background: rgba(0, 0, 0, 0.55);
+	padding: 4px 9px;
+	border-radius: 4px;
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	z-index: 10;
+}
+
+.kiosk .kiosk-error {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+	color: #fca5a5;
+	flex-direction: column;
+	gap: 14px;
+	background: #0b1220;
+}
+.kiosk .kiosk-error .sub {
+	font-size: 13px;
+	color: #94a3b8;
+	font-family: var(--font-mono);
+}
+
+/* All controls inside a kiosk inherit Inter + tabular nums */
+.kiosk .control,
+.canvas .control {
+	font-family: var(--font-kiosk);
+	font-feature-settings: 'cv11', 'tnum', 'ss01';
+	letter-spacing: -0.005em;
+}

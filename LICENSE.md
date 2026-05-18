@@ -2,6 +2,8 @@
 
 Copyright (c) 2018 Bitfocus AS - William Viker & Håkon Nessjøen, http://www.bitfocus.io/
 
+Copyright (c) 2026 Buddy contributors (fork additions: Wall Panels system, kiosk runtime, PWA support, live-push updates).
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
