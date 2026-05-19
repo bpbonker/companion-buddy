@@ -18,4 +18,7 @@ dist
 test-results
 playwright-report
 Resources
-.git
+# Note: .git intentionally NOT excluded. tools/lib.mts uses `git rev-parse`
+# to embed the build version, and husky's postinstall (when not disabled via
+# HUSKY=0) needs git hooks present. Shipping .git adds ~100 MB to the build
+# context — acceptable trade-off for build correctness.

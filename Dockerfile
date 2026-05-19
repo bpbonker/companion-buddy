@@ -10,6 +10,11 @@ RUN apt-get update && apt-get install -y \
 
 RUN yarn config set httpTimeout 100000
 
+# Disable husky in the build container — postinstall would otherwise try to install
+# git hooks and fail because .git is not part of the build context (.dockerignore).
+# See https://typicode.github.io/husky/how-to.html#ci-server-and-docker
+ENV HUSKY=0
+
 WORKDIR /app
 COPY . /app/
 
