@@ -13,6 +13,21 @@
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 		<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<!-- Paint the kiosk bg colour BEFORE CSS loads so there's no white flash on first
+		     load or between full page navigations (the nav-button case). The runtime
+		     KioskRoute later swaps this to the active panel's bgColor. -->
+		<style>
+			html,
+			body {
+				background: #0b1220;
+				color: #e9e9e9;
+				margin: 0;
+				padding: 0;
+				/* Cover the iPad PWA's safe-area inset so the home-indicator strip is also dark */
+				min-height: 100vh;
+				min-height: 100dvh;
+			}
+		</style>
 		<title>Buddy Panels</title>
 	</head>
 	<body>

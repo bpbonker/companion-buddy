@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { PanelButtonItem } from '@companion-app/shared/Model/PanelModel.js'
 import { asBool, asText, type ControlRenderProps } from './index'
 import { PinKeypad } from './PinKeypad'
@@ -7,6 +8,7 @@ export function ButtonControl(props: ControlRenderProps & { item: PanelButtonIte
 	const { item, mode, value, onPress, onWriteVar, panelPin } = props
 	const [localOn, setLocalOn] = useState(false)
 	const [pinPrompt, setPinPrompt] = useState(false)
+	const navigate = useNavigate()
 	const externalOn = item.stateVar ? asBool(value) : localOn
 	const isOn = externalOn
 
@@ -20,15 +22,15 @@ export function ButtonControl(props: ControlRenderProps & { item: PanelButtonIte
 		if (!interactive) return
 
 		// Nav buttons short-circuit any var-write or mode logic — they just navigate the kiosk
-		// to another panel on press-down. The current device's token is preserved so the new
-		// panel opens authenticated. Only works on press-down to match the kiosk URL semantics.
+		// to another panel on press-down. SPA-navigate via react-router (no full reload) so the
+		// app shell stays mounted and there's no white flash. The current device's token is
+		// preserved so the new panel opens authenticated. Only fires on press-down.
 		if (item.navigateTo && pressed) {
 			const params = new URLSearchParams(window.location.search)
 			const token = params.get('token') ?? ''
-			const onProd = window.location.pathname.startsWith('/panels-ui/')
-			const prefix = onProd ? '/panels-ui' : ''
-			const target = `${prefix}/panel/${encodeURIComponent(item.navigateTo)}?token=${encodeURIComponent(token)}`
-			window.location.assign(target)
+			navigate(`/panel/${encodeURIComponent(item.navigateTo)}?token=${encodeURIComponent(token)}`, {
+				replace: false,
+			})
 			return
 		}
 

@@ -91,6 +91,46 @@ test.describe('stress', () => {
 		await editorCtx.close()
 	})
 
+	test('nav between panels is SPA (no full page reload / white flash)', async ({ browser }) => {
+		const editorCtx = await browser.newContext({ viewport: { width: 900, height: 800 } })
+		const editor = await editorCtx.newPage()
+		await openMainEditor(editor)
+		const url = await getMainKioskUrl(editor)
+
+		const kioskCtx = await browser.newContext({ viewport: { width: 1100, height: 800 } })
+		const kiosk = await kioskCtx.newPage()
+		await kiosk.goto(url + '&debug=1', { waitUntil: 'domcontentloaded' })
+		await expect(kiosk.getByTestId('kiosk-canvas')).toHaveAttribute('data-status', 'open', { timeout: 15_000 })
+
+		// Stamp a sentinel on window. SPA navigation keeps the window; a full reload re-creates it.
+		await kiosk.evaluate(() => {
+			;(window as any).__navSentinel = 'still-here'
+		})
+
+		const buttons = kiosk.locator('[data-item-kind="button"]')
+		const buttonCount = await buttons.count()
+		const pinKeypad = kiosk.getByTestId('pin-keypad')
+		for (let i = 0; i < buttonCount; i++) {
+			await buttons.nth(i).click()
+			try {
+				await expect(pinKeypad).toBeVisible({ timeout: 1200 })
+				break
+			} catch {
+				/* try next */
+			}
+		}
+		for (const d of PIN) {
+			await pinKeypad.getByRole('button', { name: d }).click()
+		}
+		await kiosk.waitForURL(/\/panel\/test2/, { timeout: 10_000 })
+
+		const sentinel = await kiosk.evaluate(() => (window as any).__navSentinel)
+		expect(sentinel, 'SPA navigation must preserve window — no full reload / white flash').toBe('still-here')
+
+		await kioskCtx.close()
+		await editorCtx.close()
+	})
+
 	test('PIN wrong shakes, right unlocks nav to test2', async ({ browser }) => {
 		const editorCtx = await browser.newContext({ viewport: { width: 900, height: 800 } })
 		const editor = await editorCtx.newPage()
