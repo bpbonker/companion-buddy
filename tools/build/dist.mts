@@ -157,7 +157,12 @@ await $`yarn workspace companion build`
 await $`yarn workspace @companion-app/webui build`
 await $`yarn workspace @companion-app/launcher-ui build`
 await $`yarn workspace @companion-app/docs build`
+// Buddy: build the wall-panels Vite app alongside the legacy webui. The backend's
+// Express layer (UIExpress) looks for either webui-panels.zip or webui-panels/build
+// when handling /panels-ui/* requests.
+await $`yarn workspace @companion-app/webui-panels build`
 
 // generate the 'static' zip files to serve
 await zipDirectory('./webui/build', 'dist/webui.zip')
 await zipDirectory('./docs/build', 'dist/docs.zip')
+await zipDirectory('./webui-panels/build', 'dist/webui-panels.zip')

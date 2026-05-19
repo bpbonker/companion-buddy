@@ -5,9 +5,17 @@ module-local-dev
 *.log
 electron-output
 webui/build
+webui-panels/build
 .github
 Dockerfile
+Dockerfile.*
+docker-compose*.yml
 .prettier*
 dist
 */dist
 .cache
+# Buddy: local artefacts that shouldn't end up in the image
+test-results
+playwright-report
+Resources
+.git

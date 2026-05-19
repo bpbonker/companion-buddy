@@ -13,7 +13,22 @@ A fork of [Bitfocus Companion](https://github.com/bitfocus/companion) that adds 
 - **Live push on save** — saving in the editor broadcasts the new layout to every connected kiosk on that panel via the existing WebSocket. No reconnect, no flash.
 - **Bound variable streaming** — sliders/knobs/inputs read & write Companion's `custom:*` variables; indicators / meters / labels render reactively as those variables change.
 
-## Quick start
+## Quick start (Docker)
+
+For a home server or LAN deployment:
+
+```bash
+docker compose up -d --build
+```
+
+Then point tablets at:
+
+- Editor: `http://<host-LAN-IP>:8000/panels-ui/editor`
+- Kiosk: `http://<host-LAN-IP>:8000/panels-ui/panel/<slug>?token=<device-token>`
+
+Panels, tokens, the kiosk-address setting, custom variables and button pages persist in the named volume `companion-buddy-config`. The image is a multi-stage build that produces a slim Debian runtime with the bundled Companion + Buddy backend and the pre-built panels UI. See `docker-compose.yml` for optional flags (USB Stream Deck passthrough, host networking for mDNS).
+
+## Quick start (dev from source)
 
 Requires Node `>=22.22.3 <23` and Yarn 4 via corepack.
 

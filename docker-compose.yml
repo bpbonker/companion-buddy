@@ -1,0 +1,68 @@
+# Companion Buddy — home-server / kiosk deployment.
+#
+# Quick start (Linux home server):
+#   docker compose up -d --build
+#
+# Then point your tablets at:
+#   http://<this-host-LAN-IP>:8000/panels-ui/editor       (operator)
+#   http://<this-host-LAN-IP>:8000/panels-ui/panel/<slug>?token=...  (kiosk)
+#
+# Persistence lives in the named volume "companion-config" — your panels,
+# tokens, kioskHost setting, custom variables, button pages all survive
+# rebuilds.
+
+services:
+  buddy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: companion-buddy:latest
+    container_name: buddy
+    restart: unless-stopped
+
+    ports:
+      # Admin webui + Wall Panels editor + kiosk runtime
+      - "8000:8000"
+      # Satellite API + Elgato Plugin WS — uncomment if you actually use them
+      # - '16622:16622'
+      # - '16623:16623'
+      # - '28492:28492'
+
+    environment:
+      COMPANION_ADMIN_PORT: "8000"
+      # Where the SQLite DBs and other state live inside the container
+      COMPANION_CONFIG_BASEDIR: /companion
+
+    volumes:
+      # Panels, tokens, button pages, variables — everything Companion stores
+      - companion-config:/companion
+      # Optional: drop in extra/local modules here. Comment out if you have none.
+      # - ./module-local-dev:/app/module-local-dev
+
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -fSsq http://localhost:8000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+    # ---- Optional: USB Stream Deck / X-Keys / hardware surfaces ----
+    # Containers don't get host USB devices by default. If you have one of these
+    # plugged into the docker host AND want Companion to drive it, uncomment ONE
+    # of the blocks below. Most home-server kiosk-only setups should leave this off.
+    #
+    # devices:
+    #   - /dev/bus/usb:/dev/bus/usb
+    # Or, simpler but broader:
+    # privileged: true
+    #
+    # ---- Optional: host networking ----
+    # Tablet discovery via mDNS/Bonjour (e.g. listing the Companion instance in
+    # the Buddy app on the LAN) only works in host network mode on Linux. Trades
+    # off port isolation for Bonjour support.
+    #
+    # network_mode: host
+
+volumes:
+  companion-config:
+    name: companion-buddy-config
